@@ -1,39 +1,98 @@
-<!-- 
+<!--
 This README describes the package. If you publish this package to pub.dev,
 this README's contents appear on the landing page for your package.
 
 For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
 
 For general information about developing packages, see the Dart guide for
 [creating packages](https://dart.dev/guides/libraries/create-library-packages)
 and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
+[developing packages and plugins](https://flutter.dev/developing-packages).
 -->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+# A Simple Finite State Machine
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- well, its simple to use
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+```yaml
+# add the dependencies
+simple_finite_state_machine:
+  git: https://github.com/raj457036/simple_finite_state_machine.git
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+![Example of state if water](https://github.com/Tinder/StateMachine/raw/main/example/activity-diagram.png)
+
+credit: https://github.com/Tinder/StateMachine
+
+Below is a simple example based on above diagram
 
 ```dart
-const like = 'sample';
+// states
+class Solid extends MachineState<Solid> {
+  @override
+  get transitions => [Melt];
+}
+
+class Liquid extends MachineState<Liquid> {
+  @override
+  get transitions => [Vaporize, Freeze];
+}
+
+class Gas extends MachineState<Gas> {
+  @override
+  get transitions => [Condense];
+}
+
+// transitions
+class Melt extends StateTransition<Solid> {
+  @override
+  MachineState? target(current) {
+    return Liquid();
+  }
+}
+
+class Vaporize extends StateTransition<Liquid> {
+  @override
+  MachineState? target(current) {
+    return Gas();
+  }
+}
+
+class Condense extends StateTransition<Gas> {
+  @override
+  MachineState? target(current) {
+    return Liquid();
+  }
+}
+
+class Freeze extends StateTransition<Liquid> {
+  @override
+  MachineState? target(current) {
+    return Solid();
+  }
+}
+
+// main program
+void main(List<String> args) {
+  final machine = Machine(Solid(), logging: true);
+
+  machine.execute(Melt());
+  machine.execute(Vaporize());
+  machine.execute(Condense());
+  machine.execute(Freeze());
+  // This one will fail
+  machine.execute(Condense());
+}
+
 ```
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+The example above is from [Tinder State Machine Example](https://github.com/Tinder/StateMachine)
